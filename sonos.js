@@ -9,6 +9,7 @@
 		showStoppedRoom: true,
 		showAlbumArt: true,
 		showRoomName: true,
+		showDetails: false,
 		animationSpeed: 1000,
 		updateInterval: 0.5, // every 0.5 minutes
 		apiBase: 'http://localhost',
@@ -22,6 +23,10 @@
 		setInterval(
 			this.update.bind(this),
 			this.config.updateInterval * 60 * 1000);
+		// showAbumArt forced to true if showDetails is false
+		if (!this.config.showDetails) {
+			this.config.showAbumArt = true;
+		}
 	},
 	update: function(){
 		this.sendSocketNotification(
@@ -61,15 +66,11 @@
 			&& (cover && cover.trim().length) == 0;
 		// show song if PLAYING
 		if(state === 'PLAYING' && !isEmpty) {
-			room += this.html.song.format(
-				this.html.name.format(artist, track)+
-				// show album art if 'showAlbumArt' is set
-				(this.config.showAlbumArt
-					?this.html.art.format(cover)
-					:''
-				)
-				//+"<span>"+streamInfo+"</span>"
-			);
+			if (this.config.showDetails) {
+				room += this.html.name.format(artist, track) 
+			} 
+			room += (this.config.showAlbumArt?this.html.art.format(cover):'');
+			//+"<span>"+streamInfo+"</span>"
 		}
 		// show room name if 'showRoomName' is set and PLAYING or 'showStoppedRoom' is set
 		if(this.config.showRoomName && (state === 'PLAYING' || this.config.showStoppedRoom)) {
